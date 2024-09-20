@@ -5,7 +5,6 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-// Configuração do OAuth2
 const oAuth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -13,7 +12,6 @@ const oAuth2Client = new google.auth.OAuth2(
 );
 oAuth2Client.setCredentials({ refresh_token: process.env.REFRESH_TOKEN });
 
-// Função para enviar e-mail
 async function sendMail(name, email, message) {
     try {
         const accessToken = await oAuth2Client.getAccessToken();
@@ -27,8 +25,8 @@ async function sendMail(name, email, message) {
                 refreshToken: process.env.REFRESH_TOKEN,
                 accessToken: accessToken.token
             },
-            logger: true, // Ativar logs
-            debug: true  // Ativar debug
+            logger: true,
+            debug: true 
         });
 
         const mailOptions = {
@@ -46,7 +44,6 @@ async function sendMail(name, email, message) {
     }
 }
 
-// Middleware de autenticação da chave de API
 const verifyApiKey = (req, res, next) => {
     const apiKey = req.headers['api-key'];
     if (apiKey && apiKey === process.env.API_KEY) {
@@ -56,11 +53,9 @@ const verifyApiKey = (req, res, next) => {
     }
 };
 
-// Inicializar o Express
 const app = express();
-app.use(express.json()); // Para processar JSON no corpo das requisições
+app.use(express.json());
 
-// Rota para enviar e-mails
 app.post('/send-mail', verifyApiKey, async (req, res) => {
     const { name, email, message } = req.body;
 
@@ -76,7 +71,6 @@ app.post('/send-mail', verifyApiKey, async (req, res) => {
     }
 });
 
-// Definir a porta e iniciar o servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`);
